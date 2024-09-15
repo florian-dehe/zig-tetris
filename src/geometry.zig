@@ -5,21 +5,25 @@ pub const Quad = struct {
     vbo: u32,
     tbo: u32,
 
-    pub fn destroy(self: *Quad) void {
-        gl.deleteBuffers(1, &self.tbo);
-        gl.deleteBuffers(1, &self.tbo);
+    pub fn create() Quad {
+        return createQuad();
+    }
+
+    pub fn draw(q: *Quad) void {
+        gl.bindBuffer(gl.ARRAY_BUFFER, q.ebo);
+        gl.bindBuffer(gl.ARRAY_BUFFER, q.vbo);
+        gl.enableVertexAttribArray(0);
+        gl.vertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, 0, null);
+        gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_INT, @ptrFromInt(0));
+    }
+
+    pub fn destroy(q: *Quad) void {
+        gl.deleteBuffers(1, &q.tbo);
+        gl.deleteBuffers(1, &q.tbo);
     }
 };
 
-pub fn draw(quad: *Quad) void {
-    gl.bindBuffer(gl.ARRAY_BUFFER, quad.ebo);
-    gl.bindBuffer(gl.ARRAY_BUFFER, quad.vbo);
-    gl.enableVertexAttribArray(0);
-    gl.vertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, 0, null);
-    gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_INT, @ptrFromInt(0));
-}
-
-pub fn createQuad() Quad {
+fn createQuad() Quad {
     var quad: Quad = undefined;
 
     const elements = [_]u32{

@@ -4,9 +4,8 @@ const zstbi = @import("zstbi");
 const zm = @import("zmath");
 const gl = @import("zopengl").bindings;
 
-const geometry = @import("geometry.zig");
 const Window = @import("window.zig").Window;
-const Program = @import("shaders.zig").Program;
+const RenderingPipeline = @import("renderer.zig").RenderingPipeline;
 const Texture = @import("texture.zig").Texture;
 const pieces = @import("pieces.zig");
 
@@ -14,12 +13,10 @@ const cube_vShader = @embedFile("shaders/cube.vert.glsl");
 const cube_fShader = @embedFile("shaders/cube.frag.glsl");
 
 // Globals
+var renderer: RenderingPipeline = undefined;
+
 const Game = struct {
-    sProgram: Program = undefined,
-    uMVPLoc: i32,
-    uColorLoc: i32,
-    mainTex: Texture = undefined,
-    quad: geometry.Quad = undefined,
+    mainTex: Texture,
 };
 var g: *Game = undefined;
 
@@ -46,28 +43,12 @@ pub fn main() !void {
     g = allocator.create(Game) catch @panic("Can't start game (out of memory).");
     defer allocator.destroy(g);
 
-    // Shader Program
-    g.sProgram = Program.create(
-        cube_vShader,
-        cube_fShader,
-    ) catch @panic("Error creating shader program.");
-    g.uMVPLoc = gl.getUniformLocation(g.sProgram.programId, "uMVP");
-    g.uColorLoc = gl.getUniformLocation(g.sProgram.programId, "uColor");
-    defer g.sProgram.destroy();
-
-    // Main VAO
-    var vao: u32 = undefined;
-    gl.genVertexArrays(1, &vao);
-    gl.bindVertexArray(vao);
-    defer gl.deleteVertexArrays(1, &vao);
-
-    // Geometry
-    g.quad = geometry.createQuad();
-    defer g.quad.destroy();
+    renderer = RenderingPipeline.create(cube_vShader, cube_fShader) catch
+        @panic("Can't initialize Renderer");
+    defer renderer.destroy();
 
     // Texture
-    g.mainTex =
-        Texture.create("assets/tetris.png") catch @panic("Can't load texture");
+    g.mainTex = Texture.create("assets/tetris.png") catch @panic("Can't load texture");
     defer g.mainTex.deinit();
 
     // Drawing
@@ -101,10 +82,6 @@ pub fn main() !void {
 }
 
 fn drawPiece(p: *const pieces.Piece, origin: [2]f32, scale: f32, proj: zm.Mat) void {
-    g.sProgram.use();
-    g.mainTex.bind();
-    gl.uniform3f(g.uColorLoc, p.color[0], p.color[1], p.color[2]);
-
     for (p.pattern, 0..) |sub, y| {
         for (sub, 0..) |block, x| {
             if (!block) continue;
@@ -118,9 +95,8 @@ fn drawPiece(p: *const pieces.Piece, origin: [2]f32, scale: f32, proj: zm.Mat) v
             );
 
             const mvp = zm.mul(modelMat, proj);
-            gl.uniformMatrix4fv(g.uMVPLoc, 1, gl.FALSE, zm.arrNPtr(&mvp));
-
-            geometry.draw(&g.quad);
+            g.mainTex.bind();
+            renderer.draw(p.color, zm.arrNPtr(&mvp));
         }
     }
 }

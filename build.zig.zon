@@ -23,11 +23,11 @@
     // Once all dependencies are fetched, `zig build` no longer requires
     // internet connectivity.
     .dependencies = .{
-        .system_sdk = .{ .path = "libs/system-sdk" },
-        .zglfw = .{ .path = "libs/zglfw" },
-        .zstbi = .{ .path = "libs/zstbi" },
-        .zmath = .{ .path = "libs/zmath" },
-        .zopengl = .{ .path = "libs/zopengl" },
+        .system_sdk = .{ .path = "external/zig-gamedev/libs/system-sdk" },
+        .zglfw = .{ .path = "external/zig-gamedev/libs/zglfw" },
+        .zstbi = .{ .path = "external/zig-gamedev/libs/zstbi" },
+        .zmath = .{ .path = "external/zig-gamedev/libs/zmath" },
+        .zopengl = .{ .path = "external/zig-gamedev/libs/zopengl" },
     },
     .paths = .{
         "build.zig",

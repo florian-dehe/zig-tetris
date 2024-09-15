@@ -15,11 +15,11 @@ zig build play --release=ReleaseFast
 This project uses the following depencies:
 
 * [zig-gamedev](https://github.com/zig-gamedev/zig-gamedev)
-  * [system-sdk](libs/system-sdk)
-  * [zglfw](libs/zglfw)
-  * [zmath](libs/zmath)
-  * [zopengl](libs/zopengl)
-  * [zstbi](libs/zstbi)
+  * [system-sdk](external/zig-gamedev/libs/system-sdk)
+  * [zglfw](external/zig-gamedev/libs/zglfw)
+  * [zmath](external/zig-gamedev/libs/zmath)
+  * [zopengl](external/zig-gamedev/libs/zopengl)
+  * [zstbi](external/zig-gamedev/libs/zstbi)
 
 ## Author
 

@@ -7,7 +7,7 @@ A tetris clone using Zig & OpenGL.
 To build and run the game:
 
 ```sh
-zig build play --release=ReleaseFast
+zig build play --release=fast
 ```
 
 ## Dependencies
